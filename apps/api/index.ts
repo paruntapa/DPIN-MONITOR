@@ -1,8 +1,11 @@
 import express from "express";
 import { authMiddleware } from "./middleware";
 import { prismaClient } from "../../packages/db/src";
+import cors from "cors";
 
 const app = express();
+
+app.use(cors());
 app.use(express.json());
 
 app.post("/api/v1/website", authMiddleware, async (req, res) => {
@@ -27,7 +30,8 @@ app.get("/api/v1/website/status", authMiddleware, async (req, res) => {
     const data = await prismaClient.website.findFirst({
         where: {
             id: websiteId,
-            userId
+            userId,
+            disabled: false
         },
         include: {
             ticks: true
@@ -38,19 +42,34 @@ app.get("/api/v1/website/status", authMiddleware, async (req, res) => {
 
 app.get("/api/v1/websites", authMiddleware, async (req, res) => {
     const userId = req.userId;
-    await prismaClient.website.findMany({
+    const websites = await prismaClient.website.findMany({
         where: {
             userId,
             disabled: false
+        },
+        include: {
+            ticks: true
         }
-    }).then((data) => {
-        res.send(data);
-    });
+    })
+    res.json({websites: websites});
 });
 
-app.delete("/api/v1/website/", authMiddleware, (req, res) => {
+app.delete("/api/v1/website/", authMiddleware, async (req, res) => {
+    const websiteId = req.body.websiteId; 
+    const userId = req.userId;
+    await prismaClient.website.update({
+        where: {
+            id: websiteId,
+            userId
+        },
+        data: {
+            disabled: true
+        }
+    })
+
+    res.send("successfully deleted");
 
 });
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
+app.listen(8080, () => {
+  console.log("Server is running on port 8080");
 });

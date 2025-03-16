@@ -1,18 +1,18 @@
 import type { NextFunction, Request, Response } from "express";
+import jwt from "jsonwebtoken";
+import { JWT_PUBLIC_KEY } from "./config";
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers['authorization'];
-    req.userId = "1";
+    const token = req.headers['authorization'];
+    if(!token ) {
+        res.status(401).send("Unauthorized");
+        return
+    }
+    const decoded = jwt.verify(token, JWT_PUBLIC_KEY) 
+    if(!decoded.sub || !decoded) {
+        res.status(401).send("Unauthorized");
+        return
+    }
+    req.userId = decoded.sub as string;
     next();
-
-    // if (req.headers.authorization) {
-    //     const token = req.headers.authorization.split(" ")[1];
-    //     if (token) {
-    //         next();
-    //     } else {
-    //         res.status(401).send("Unauthorized");
-    //     }
-    // } else {
-    //     res.status(401).send("Unauthorized");
-    // }
 };
