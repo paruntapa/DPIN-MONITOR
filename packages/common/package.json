@@ -1,15 +1,14 @@
 {
-  "name": "hub",
+  "name": "common",
   "module": "index.ts",
   "type": "module",
+  "exports": {
+    "./types": "./index.ts"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "@solana/web3.js": "1",
-    "tweetnacl-util": "0.15.0"
   }
 }

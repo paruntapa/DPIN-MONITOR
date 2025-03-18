@@ -51,7 +51,7 @@ function CreateWebsiteForm({ onClose, refreshWebsites }: { onClose: () => void, 
   };
 
   return (
-    <div className='p-6'>
+    <div className='p-6'> 
       <h2 className="text-2xl font-bold text-white mb-6">Add New Website</h2>
       <div className="space-y-4">
         
@@ -79,20 +79,25 @@ function CreateWebsiteForm({ onClose, refreshWebsites }: { onClose: () => void, 
   );
 }
 
-function StatusIndicator({ status }: { status: any }) {
+function StatusIndicator({ ticks }: { ticks: { status: string; timestamp: Date }[] }) {
   return (
     <div className={`relative flex items-center justify-center`}>
-      <div
+      {ticks.map((tick, indx)=> (
+        indx === 9 &&(
+        <div
+        key={9}
         className={`h-4 w-4 rounded-full ${
-          status === 'Good' ? 'bg-green-500' : status === 'Bad' ? ' bg-red-500' : ' bg-gray-500'
+          tick.status === 'Good' ? 'bg-green-500' : tick.status === 'Bad' ? ' bg-red-500' : ' bg-gray-500'
         }`}
       >
         <div
           className={`absolute inset-0 rounded-full ${
-            status === 'Good' ? 'animate-ping bg-green-400' : status === 'Bad' ? 'animate-ping bg-red-500' : 'animate-ping bg-gray-500'
+            tick.status === 'Good' ? 'animate-ping bg-green-400' : tick.status === 'Bad' ? 'animate-ping bg-red-500' : 'animate-ping bg-gray-500'
           } opacity-75`}
         ></div>
-      </div>
+      </div>)
+      ))}
+      
     </div>
   );
 }
@@ -197,7 +202,7 @@ function WebsiteCard({ website }: { website: ProcessedWebsite }) {
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-4">
-          <StatusIndicator status={website.aggregatedTicks} />
+          <StatusIndicator ticks={website.aggregatedTicks} />
           <div>
             <h3 className="text-lg font-semibold text-white">{website.url}</h3>
             <div className="flex items-center text-gray-400 text-sm">
